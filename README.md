@@ -1,16 +1,12 @@
-# 🌦️ Django Weather API Project
+# Django Weather API Project
 
 A simple Django backend project that fetches and displays weather data using the [Open-meteo](https://open-meteo.com/) API.
-
----
 
 ## Features
 
 - Fetch current weather data from the Open-meteo API
 - User input for location (latitude & longitude)
 - Focus on clean backend architecture using Django
-
----
 
 ## Requirements
 
@@ -24,8 +20,6 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
----
-
 ## How It Works
 
 1. User submits a location (latitude and longitude).
@@ -37,8 +31,6 @@ Example Open-meteo endpoint:
 ```
 https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current_weather=true
 ```
-
----
 
 ## Running the Project
 
