@@ -7,7 +7,8 @@
 			body {
 				font-family: sans-serif;
 				padding: 2rem;
-				background: rgb(193, 197, 202);
+				background: rgb(160, 160, 160);
+				color: #333;
 			}
 			.container {
 				max-width: 500px;
@@ -19,31 +20,68 @@
 			}
 			input {
 				padding: 0.5rem;
-				margin-right: 0.5rem;
+				margin: 0.5rem 0;
+				width: 100%;
+				box-sizing: border-box;
 			}
 			button {
 				padding: 0.5rem 1rem;
+				margin-top: 1rem;
+				width: 100%;
+				background: #4caf50;
+				color: white;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			button:hover {
+				background: #45a049;
 			}
 			.result {
 				margin-top: 1.5rem;
+			}
+			.error {
+				color: red;
 			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
 			<h2>Weather Forecast</h2>
+
 			<form method="get">
+				<label for="city">City name:</label>
 				<input
 					type="text"
+					id="city"
 					name="city"
-					placeholder="City name"
+					placeholder="Example: London"
 					value="{{ request.GET.city }}"
 				/>
+
+				<label for="lat">Latitude:</label>
+				<input
+					type="text"
+					id="lat"
+					name="lat"
+					placeholder="Example: 52.52"
+					value="{{ request.GET.lat }}"
+				/>
+
+				<label for="lon">Longitude:</label>
+				<input
+					type="text"
+					id="lon"
+					name="lon"
+					placeholder="Example: 13.41"
+					value="{{ request.GET.lon }}"
+				/>
+
 				<button type="submit">Get Weather</button>
 			</form>
 
 			{% if error %}
-			<p style="color: red">{{ error }}</p>
+			<p class="error">{{ error }}</p>
 			{% endif %} {% if weather %}
 			<div class="result">
 				<h3>Weather for {{ city }} ({{ country }})</h3>
@@ -53,5 +91,30 @@
 			</div>
 			{% endif %}
 		</div>
+
+		<script>
+			const cityInput = document.getElementById('city')
+			const latInput = document.getElementById('lat')
+			const lonInput = document.getElementById('lon')
+
+			cityInput.addEventListener('input', () => {
+				if (cityInput.value.trim() !== '') {
+					latInput.disabled = true
+					lonInput.disabled = true
+				} else {
+					latInput.disabled = false
+					lonInput.disabled = false
+				}
+			})
+			;[latInput, lonInput].forEach(input => {
+				input.addEventListener('input', () => {
+					if (latInput.value.trim() !== '' || lonInput.value.trim() !== '') {
+						cityInput.disabled = true
+					} else {
+						cityInput.disabled = false
+					}
+				})
+			})
+		</script>
 	</body>
 </html>

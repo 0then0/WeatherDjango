@@ -4,13 +4,16 @@ from django.shortcuts import render
 
 
 def get_weather(request):
-    city = request.GET.get("city", "")
-    lat = request.GET.get("lat")
-    lon = request.GET.get("lon")
+    city_input = request.GET.get("city", "").strip()
+    lat = request.GET.get("lat", "").strip()
+    lon = request.GET.get("lon", "").strip()
 
-    if city:
+    city_name = None
+    country_name = None
+
+    if city_input:
         geocode_url = (
-            f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1"
+            f"https://geocoding-api.open-meteo.com/v1/search?name={city_input}&count=1"
         )
         try:
             geo_response = requests.get(geocode_url, timeout=5)
@@ -26,40 +29,36 @@ def get_weather(request):
                     request,
                     "weather/weather.html",
                     {
-                        "error": f"City '{city}' not found.",
+                        "error": f"City '{city_input}' not found.",
                     },
                 )
         except requests.exceptions.RequestException as e:
             return JsonResponse(
                 {"error": "Geocoding failed", "details": str(e)}, status=500
             )
+
     elif lat and lon:
-        geocode_url = f"https://geocoding-api.open-meteo.com/v1/reverse?latitude={lat}&longitude={lon}&count=1"
+        reverse_geocode_url = f"https://geocoding-api.open-meteo.com/v1/reverse?latitude={lat}&longitude={lon}&count=1"
         try:
-            geo_response = requests.get(geocode_url, timeout=5)
+            geo_response = requests.get(reverse_geocode_url, timeout=5)
             geo_data = geo_response.json()
             results = geo_data.get("results")
             if results:
                 city_name = results[0]["name"]
                 country_name = results[0]["country"]
             else:
-                return render(
-                    request,
-                    "weather/weather.html",
-                    {
-                        "error": f"Coordinates '{lat}, {lon}' not found.",
-                    },
-                )
+                city_name = "Unknown"
+                country_name = "Unknown"
         except requests.exceptions.RequestException as e:
             return JsonResponse(
-                {"error": "Geocoding failed", "details": str(e)}, status=500
+                {"error": "Reverse geocoding failed", "details": str(e)}, status=500
             )
-    else:
-        city_name = "Unknown"
-        country_name = "Unknown"
 
-    lat = lat or "52.52"
-    lon = lon or "13.41"
+    else:
+        lat = "52.52"
+        lon = "13.41"
+        city_name = "Berlin"
+        country_name = "Germany"
 
     weather_url = (
         f"https://api.open-meteo.com/v1/forecast"
